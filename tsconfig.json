@@ -1,6 +1,6 @@
 {
   "include": ["**/*.ts", "**/*.tsx", "eslint.config.js", "prettier.config.js", "vite.config.js"],
-  
+
   "compilerOptions": {
     "target": "ES2022",
     "jsx": "react-jsx",
@@ -14,6 +14,10 @@
     "verbatimModuleSyntax": false,
     "noEmit": true,
 
+    /* Decorators */
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+
     /* Linting */
     "skipLibCheck": true,
     "strict": true,
@@ -21,6 +25,7 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
+    "strictPropertyInitialization": false,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
