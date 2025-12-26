@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { signOut as signOutServer } from '@/features/authentication/actions/sign-out'
+import { signOut as signOutServer } from '@/features/auth/actions/sign-out'
 import { useServerFn } from '@tanstack/react-start'
 
 export const Route = createFileRoute('/_authenticated/dashboard')({
@@ -23,7 +23,6 @@ function RouteComponent() {
   const user = context.session.user
   const session = context.session.session
 
-  // Format dates
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -54,18 +53,10 @@ function RouteComponent() {
             <div className="flex items-center gap-6">
               {/* Avatar */}
               <div className="relative">
-                {user?.image ? (
-                  <img
-                    src={user.image}
-                    alt={user.name}
-                    className="w-24 h-24 rounded-full object-cover ring-4 ring-primary/10"
-                  />
-                ) : (
-                  <div className="w-24 h-24 rounded-full bg-linear-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground text-3xl font-bold ring-4 ring-primary/10">
-                    {user?.name?.charAt(0).toUpperCase() || 'U'}
-                  </div>
-                )}
-                {user?.emailVerified && (
+                <div className="w-24 h-24 rounded-full bg-linear-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground text-3xl font-bold ring-4 ring-primary/10">
+                  {user?.name?.charAt(0).toUpperCase() || 'U'}
+                </div>
+                {user.emailVerified && (
                   <div className="absolute -bottom-1 -right-1 bg-green-500 text-white rounded-full p-1.5">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
                       <path
@@ -82,7 +73,7 @@ function RouteComponent() {
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
                   <h2 className="text-2xl font-bold">{user?.name || 'User'}</h2>
-                  {user?.emailVerified && <Badge variant="secondary">Verified</Badge>}
+                  {user.emailVerified && <Badge variant="secondary">Verified</Badge>}
                 </div>
                 <p className="text-muted-foreground flex items-center gap-2">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
@@ -111,8 +102,8 @@ function RouteComponent() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">Email Verified</span>
-                  <Badge variant={user?.emailVerified ? 'default' : 'destructive'}>
-                    {user?.emailVerified ? 'Yes' : 'No'}
+                  <Badge variant={user.emailVerified ? 'default' : 'destructive'}>
+                    {user.emailVerified ? 'Yes' : 'No'}
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between">
@@ -143,11 +134,11 @@ function RouteComponent() {
                       clipRule="evenodd"
                     />
                   </svg>
-                  <span className="text-sm">{user?.createdAt ? formatDate(user.createdAt.toISOString()) : 'N/A'}</span>
+                  <span className="text-sm">{user.createdAt ? formatDate(user.createdAt.toISOString()) : 'N/A'}</span>
                 </div>
                 <p className="text-xs text-muted-foreground mt-4">
                   You've been with us for{' '}
-                  {user?.createdAt
+                  {user.createdAt
                     ? Math.floor((new Date().getTime() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24))
                     : 0}{' '}
                   days
@@ -172,7 +163,7 @@ function RouteComponent() {
                       clipRule="evenodd"
                     />
                   </svg>
-                  <span className="text-sm">{user?.updatedAt ? formatDate(user.updatedAt.toISOString()) : 'N/A'}</span>
+                  <span className="text-sm">{user.updatedAt ? formatDate(user.updatedAt.toISOString()) : 'N/A'}</span>
                 </div>
               </div>
             </CardContent>
@@ -189,7 +180,7 @@ function RouteComponent() {
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-1">
                 <p className="text-sm font-medium">Session ID</p>
-                <code className="text-xs bg-muted px-3 py-1.5 rounded block break-all">{session.id || 'N/A'}</code>
+                <code className="text-xs bg-muted px-3 py-1.5 rounded block break-all">{session.id}</code>
               </div>
               <div className="space-y-1">
                 <p className="text-sm font-medium">Expires At</p>

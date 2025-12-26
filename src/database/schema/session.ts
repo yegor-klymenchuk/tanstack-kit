@@ -1,30 +1,24 @@
-import { pgTable, text, timestamp, index, foreignKey, unique } from 'drizzle-orm/pg-core'
-import { relations, sql } from 'drizzle-orm'
+import { pgTable, text, timestamp, index } from 'drizzle-orm/pg-core'
 import { user } from './user'
+import { relations } from 'drizzle-orm'
 
 export const session = pgTable(
   'session',
   {
-    id: text().primaryKey().notNull(),
-    expiresAt: timestamp({ withTimezone: true, mode: 'string' }).notNull(),
-    token: text().notNull(),
-    createdAt: timestamp({ withTimezone: true, mode: 'string' })
-      .default(sql`CURRENT_TIMESTAMP`)
+    id: text('id').primaryKey(),
+    expiresAt: timestamp('expires_at').notNull(),
+    token: text('token').notNull().unique(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
-    updatedAt: timestamp({ withTimezone: true, mode: 'string' }).notNull(),
-    ipAddress: text(),
-    userAgent: text(),
-    userId: text().notNull(),
+    ipAddress: text('ip_address'),
+    userAgent: text('user_agent'),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
   },
-  (table) => [
-    index('session_userId_idx').using('btree', table.userId.asc().nullsLast().op('text_ops')),
-    foreignKey({
-      columns: [table.userId],
-      foreignColumns: [user.id],
-      name: 'session_userId_fkey',
-    }).onDelete('cascade'),
-    unique('session_token_key').on(table.token),
-  ],
+  (table) => [index('session_userId_idx').on(table.userId)],
 )
 
 export const sessionRelations = relations(session, ({ one }) => ({

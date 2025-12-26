@@ -1,27 +1,25 @@
 import { betterAuth } from 'better-auth'
 import { tanstackStartCookies } from 'better-auth/tanstack-start'
-import { oneTap } from "better-auth/plugins";
-import { Pool } from 'pg'
+import { oneTap } from 'better-auth/plugins'
+import { drizzleAdapter } from 'better-auth/adapters/drizzle'
+import { db } from '@/database/database'
+import { env } from '@/env'
 
 export const auth = betterAuth({
-  plugins: [tanstackStartCookies(), oneTap()],
-  database: new Pool({
-    host: process.env.DATABASE_HOST,
-    port: parseInt(process.env.DATABASE_PORT || '5432'),
-    user: process.env.DATABASE_USERNAME,
-    password: process.env.DATABASE_PASSWORD,
-    database: process.env.DATABASE_NAME,
+  secret: env.BETTER_AUTH_SECRET,
+  baseURL: env.BETTER_AUTH_URL,
+  trustedOrigins: [env.BETTER_AUTH_URL],
+  database: drizzleAdapter(db, {
+    provider: 'pg',
   }),
-  trustedOrigins: [process.env.BETTER_AUTH_URL || ''],
   emailAndPassword: {
     enabled: true,
   },
   socialProviders: {
     google: {
-      clientId: process.env.GOOGLE_CLIENT_ID || '',
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+      clientId: env.GOOGLE_CLIENT_ID,
+      clientSecret: env.GOOGLE_CLIENT_SECRET,
     },
   },
-  secret: process.env.BETTER_AUTH_SECRET,
-  baseURL: process.env.BETTER_AUTH_URL,
+  plugins: [tanstackStartCookies(), oneTap()],
 })

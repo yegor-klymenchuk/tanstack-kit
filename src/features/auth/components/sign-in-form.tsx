@@ -5,8 +5,11 @@ import { Field, FieldDescription, FieldGroup } from '@/components/ui/field'
 import { Link } from '@tanstack/react-router'
 import { useAppForm } from '@/components/ui/form'
 import z from 'zod'
-import { signIn } from '../actions/sign-in'
+import { signIn as signInServer } from '../actions/sign-in'
 import { signInWithGoogle } from '../actions/sign-in-with-google'
+import { toast } from 'sonner'
+import { useServerFn } from '@tanstack/react-start'
+import { useMutation } from '@tanstack/react-query'
 
 const signInFormSchema = z.object({
   email: z.email({
@@ -19,6 +22,12 @@ const signInFormSchema = z.object({
 interface SignInFormProps extends React.ComponentProps<'div'> {}
 
 export const SignInForm: React.FC<SignInFormProps> = ({ className, ...props }) => {
+  const signIn = useServerFn(signInServer)
+
+  const signInMutation = useMutation({
+    mutationFn: signIn,
+  })
+
   const form = useAppForm({
     defaultValues: {
       email: '',
@@ -28,8 +37,17 @@ export const SignInForm: React.FC<SignInFormProps> = ({ className, ...props }) =
       onSubmit: signInFormSchema,
     },
     onSubmit: async ({ value }) => {
-      await signIn({ data: value })
-      window.location.href = '/dashboard'
+      signInMutation.mutate(
+        { data: value },
+        {
+          onSuccess: () => {
+            window.location.href = '/dashboard'
+          },
+          onError: (error) => {
+            toast.info(error.message, { position: 'top-center' })
+          },
+        },
+      )
     },
   })
 

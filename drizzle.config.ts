@@ -1,18 +1,19 @@
 import { defineConfig } from 'drizzle-kit'
-import * as dotenv from 'dotenv'
+// import * as dotenv from 'dotenv'
+import { env } from '@/env'
 
-dotenv.config()
+// dotenv.config()
 
 export default defineConfig({
   out: './drizzle',
-  schema: './src/schema/*',
+  schema: './src/database/schema/*',
   dialect: 'postgresql',
   dbCredentials: {
-    host: process.env.DATABASE_HOST || 'localhost',
-    port: parseInt(process.env.DATABASE_PORT || '5433'),
-    user: process.env.DATABASE_USERNAME || 'tanstack-kit',
-    password: process.env.DATABASE_PASSWORD || '123456789',
-    database: process.env.DATABASE_NAME || 'test',
+    host: env.DATABASE_HOST,
+    port: env.DATABASE_PORT,
+    user: env.DATABASE_USERNAME,
+    password: env.DATABASE_PASSWORD,
+    database: env.DATABASE_NAME,
     ssl: false,
   },
   verbose: true,

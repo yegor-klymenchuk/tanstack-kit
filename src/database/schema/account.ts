@@ -1,34 +1,29 @@
-import { pgTable, text, timestamp, index, foreignKey } from 'drizzle-orm/pg-core'
-import { relations, sql } from 'drizzle-orm'
+import { pgTable, text, timestamp, index } from 'drizzle-orm/pg-core'
 import { user } from './user'
+import { relations } from 'drizzle-orm'
 
 export const account = pgTable(
   'account',
   {
-    id: text().primaryKey().notNull(),
-    accountId: text().notNull(),
-    providerId: text().notNull(),
-    userId: text().notNull(),
-    accessToken: text(),
-    refreshToken: text(),
-    idToken: text(),
-    accessTokenExpiresAt: timestamp({ withTimezone: true, mode: 'string' }),
-    refreshTokenExpiresAt: timestamp({ withTimezone: true, mode: 'string' }),
-    scope: text(),
-    password: text(),
-    createdAt: timestamp({ withTimezone: true, mode: 'string' })
-      .default(sql`CURRENT_TIMESTAMP`)
+    id: text('id').primaryKey(),
+    accountId: text('account_id').notNull(),
+    providerId: text('provider_id').notNull(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    accessToken: text('access_token'),
+    refreshToken: text('refresh_token'),
+    idToken: text('id_token'),
+    accessTokenExpiresAt: timestamp('access_token_expires_at'),
+    refreshTokenExpiresAt: timestamp('refresh_token_expires_at'),
+    scope: text('scope'),
+    password: text('password'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
-    updatedAt: timestamp({ withTimezone: true, mode: 'string' }).notNull(),
   },
-  (table) => [
-    index('account_userId_idx').using('btree', table.userId.asc().nullsLast().op('text_ops')),
-    foreignKey({
-      columns: [table.userId],
-      foreignColumns: [user.id],
-      name: 'account_userId_fkey',
-    }).onDelete('cascade'),
-  ],
+  (table) => [index('account_userId_idx').on(table.userId)],
 )
 
 export const accountRelations = relations(account, ({ one }) => ({

@@ -1,25 +1,20 @@
-import { pgTable, unique, text, boolean, timestamp } from 'drizzle-orm/pg-core'
-import { relations, sql } from 'drizzle-orm'
+import { relations } from 'drizzle-orm'
+import { pgTable, text, timestamp, boolean } from 'drizzle-orm/pg-core'
 import { session } from './session'
 import { account } from './account'
 
-export const user = pgTable(
-  'user',
-  {
-    id: text().primaryKey().notNull(),
-    name: text().notNull(),
-    email: text().notNull(),
-    emailVerified: boolean().notNull(),
-    image: text(),
-    createdAt: timestamp({ withTimezone: true, mode: 'string' })
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-    updatedAt: timestamp({ withTimezone: true, mode: 'string' })
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-  },
-  (table) => [unique('user_email_key').on(table.email)],
-)
+export const user = pgTable('user', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  email: text('email').notNull().unique(),
+  emailVerified: boolean('email_verified').default(false).notNull(),
+  image: text('image'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at')
+    .defaultNow()
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull(),
+})
 
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),
