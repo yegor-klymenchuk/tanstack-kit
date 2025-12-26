@@ -1,9 +1,10 @@
 import { betterAuth } from 'better-auth'
 import { tanstackStartCookies } from 'better-auth/tanstack-start'
+import { oneTap } from "better-auth/plugins";
 import { Pool } from 'pg'
 
 export const auth = betterAuth({
-  plugins: [tanstackStartCookies()],
+  plugins: [tanstackStartCookies(), oneTap()],
   database: new Pool({
     host: process.env.DATABASE_HOST,
     port: parseInt(process.env.DATABASE_PORT || '5432'),
