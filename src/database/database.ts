@@ -7,13 +7,13 @@ import { verification } from './schema/verification'
 
 const pool = new Pool({
   host: process.env.DATABASE_HOST,
-  port: parseInt(process.env.DATABASE_PORT || '5432'),
+  port: parseInt(process.env.DATABASE_PORT || '5433'),
   user: process.env.DATABASE_USERNAME,
   password: process.env.DATABASE_PASSWORD,
   database: process.env.DATABASE_NAME,
 })
 
-export const db = drizzle({
+export const database = drizzle({
   client: pool,
   schema: {
     user,

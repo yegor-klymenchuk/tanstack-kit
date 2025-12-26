@@ -10,8 +10,8 @@ const signInSchema = z.object({
 
 export const signIn = createServerFn()
   .inputValidator((data) => signInSchema.parse(data))
-  .handler(async ({ data }) => {
-    const user = await auth.api.signInEmail({
+  .handler(({ data }) => {
+    return auth.api.signInEmail({
       body: {
         email: data.email,
         password: data.password,
@@ -19,5 +19,4 @@ export const signIn = createServerFn()
       },
       headers: getRequestHeaders(),
     })
-    return user
   })

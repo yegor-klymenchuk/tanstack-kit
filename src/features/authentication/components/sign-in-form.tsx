@@ -2,10 +2,11 @@ import { cn } from '@/utils/cn'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Field, FieldDescription, FieldGroup } from '@/components/ui/field'
-import { Link, useNavigate } from '@tanstack/react-router'
+import { Link } from '@tanstack/react-router'
 import { useAppForm } from '@/components/ui/form'
 import z from 'zod'
 import { signIn } from '../actions/sign-in'
+import { signInWithGoogle } from '../actions/sign-in-with-google'
 
 const signInFormSchema = z.object({
   email: z.email({
@@ -18,8 +19,6 @@ const signInFormSchema = z.object({
 interface SignInFormProps extends React.ComponentProps<'div'> {}
 
 export const SignInForm: React.FC<SignInFormProps> = ({ className, ...props }) => {
-  const navigate = useNavigate()
-
   const form = useAppForm({
     defaultValues: {
       email: '',
@@ -30,7 +29,7 @@ export const SignInForm: React.FC<SignInFormProps> = ({ className, ...props }) =
     },
     onSubmit: async ({ value }) => {
       await signIn({ data: value })
-      navigate({ to: '/dashboard' })
+      window.location.href = '/dashboard'
     },
   })
 
@@ -72,7 +71,7 @@ export const SignInForm: React.FC<SignInFormProps> = ({ className, ...props }) =
                   <form.AppForm>
                     <form.SubmitButton label="Login" />
                   </form.AppForm>
-                  <Button variant="outline" type="button">
+                  <Button variant="outline" type="button" onClick={signInWithGoogle}>
                     Continue with Google
                   </Button>
                   <FieldDescription className="text-center">

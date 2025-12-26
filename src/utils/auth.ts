@@ -11,6 +11,7 @@ export const auth = betterAuth({
     password: process.env.DATABASE_PASSWORD,
     database: process.env.DATABASE_NAME,
   }),
+  trustedOrigins: [process.env.BETTER_AUTH_URL || ''],
   emailAndPassword: {
     enabled: true,
   },

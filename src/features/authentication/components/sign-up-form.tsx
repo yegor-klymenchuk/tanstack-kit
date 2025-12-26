@@ -2,13 +2,14 @@ import { cn } from '@/utils/cn'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Field, FieldDescription, FieldGroup } from '@/components/ui/field'
-import { Link, useNavigate } from '@tanstack/react-router'
+import { Link } from '@tanstack/react-router'
 import { useAppForm } from '@/components/ui/form'
 import z from 'zod'
 import { signUp as signUpServer } from '../actions/sign-up'
 import { useServerFn } from '@tanstack/react-start'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { signInWithGoogle } from '../actions/sign-in-with-google'
 
 const signUpFormSchema = z.object({
   name: z.string().min(1, { error: 'Name is required' }),
@@ -23,15 +24,10 @@ const signUpFormSchema = z.object({
 interface SignUpFormProps extends React.ComponentProps<'div'> {}
 
 export const SignUpForm: React.FC<SignUpFormProps> = ({ className, ...props }) => {
-  const navigate = useNavigate()
-
   const signUp = useServerFn(signUpServer)
 
   const signUpMutation = useMutation({
     mutationFn: signUp,
-    onSuccess: () => {
-      navigate({ to: '/dashboard' })
-    },
   })
 
   const form = useAppForm({
@@ -49,7 +45,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ className, ...props }) =
         { data: value },
         {
           onSuccess: () => {
-            navigate({ to: '/dashboard' })
+            window.location.href = '/dashboard'
           },
           onError: (error) => {
             toast.info(error.message, { position: 'top-center' })
@@ -121,8 +117,8 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ className, ...props }) =
                   <form.AppForm>
                     <form.SubmitButton label="Create Account" />
                   </form.AppForm>
-                  <Button variant="outline" type="button">
-                    Sign up with Google
+                  <Button variant="outline" type="button" onClick={signInWithGoogle}>
+                    Continue with Google
                   </Button>
                   <FieldDescription className="px-6 text-center">
                     Already have an account? <Link to="/sign-in">Sign in</Link>
